@@ -65,7 +65,7 @@ class LoggingMiddleware(object):
         resp = self.app(environ, wrap_start)
         code = extra['status'].split()[0]
         self.logger.error(
-            "%s %s %s/%s/%s (%s) %.2fms",
+            "%s %s %s://%s%s (%s) %.4fms",
             code,
             environ['REQUEST_METHOD'],
             environ['wsgi.url_scheme'], 

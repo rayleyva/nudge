@@ -564,6 +564,9 @@ def serve(service_description, args=None):
     )
     sp = nudge.log.LoggingMiddleware(sp)
 
+    # Send default eventlet logging to /dev/null.  Stop duplicate log lines
+    devnull = open('/dev/null','w+')
+
     port = int(options.port)
     if str(options.server).strip().lower() == 'paste':
         print "Running paste (multithreaded) on %d" % (port)
@@ -587,5 +590,6 @@ def serve(service_description, args=None):
             eventlet.listen(('', port)),
             sp,
             max_size=100,
+            log=devnull
         )
 
