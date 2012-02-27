@@ -543,6 +543,9 @@ def serve(service_description, args=None):
     #
     from optparse import OptionParser
     parser = OptionParser()
+    # Default host address is 0.0.0.0 = All IP addresses it can bind too.
+    parser.add_option(
+        "-H", "--host", dest="host", help="host address to bind to.", default='0.0.0.0')
     parser.add_option(
         "-p", "--port", dest="port", help="port to run on", default=8080)
     parser.add_option(
@@ -577,6 +580,7 @@ def serve(service_description, args=None):
     # Send default eventlet logging to /dev/null.  Stop duplicate log lines
     devnull = open('/dev/null','w+')
 
+    host = options.host
     port = int(options.port)
     if str(options.server).strip().lower() == 'paste':
         print "Running paste (multithreaded) on %d" % (port)
@@ -584,7 +588,7 @@ def serve(service_description, args=None):
         threads = int(options.threads)
         backlog = int(options.backlog)
         paste.httpserver.serve(
-            sp, host=None, port=port, use_threadpool=True,
+            sp, host=host, port=port, use_threadpool=True,
             threadpool_workers=threads, threadpool_options=None,
             request_queue_size=backlog
         )
@@ -597,7 +601,7 @@ def serve(service_description, args=None):
         print "starting eventlet server on port %i" % port
         import eventlet.wsgi
         eventlet.wsgi.server(
-            eventlet.listen(('', port)),
+            eventlet.listen((host, port)),
             sp,
             max_size=100,
             log=devnull
